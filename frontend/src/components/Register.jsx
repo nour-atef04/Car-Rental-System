@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios"; // to make HTTP requests (send data from form to backend)
-import { useNavigate } from "react-router-dom"; // to navigate between routes
 import "./Register.css";
 import CustomButton from "./CustomButton";
 import backgroundImage from "../images/background.png";
@@ -18,7 +17,6 @@ const Register = () => {
 
   const [message, setMessage] = useState(""); // store success message
   const [error, setError] = useState(""); // store error message
-  const navigate = useNavigate(); // initialize useNavigate
 
   // handle changes in the input fields of the form
   const handleChange = (e) => {
@@ -52,10 +50,6 @@ const Register = () => {
     } catch (err) {
       setError(err.response?.data || "Registration failed!"); // If the backend sends an error message in the response, that message is used, o.w, display 'registration failed!'
     }
-  };
-
-  const handleLoginRedirect = () => {
-    navigate("/login"); // Use navigate to redirect to the login page
   };
 
   const bodyStyle = {
@@ -136,9 +130,9 @@ const Register = () => {
         {error && <p className="error-message">{error}</p>}
 
         <CustomButton
-          onClick={handleLoginRedirect}
+          onClick={handleSubmit}
           text="Register"
-          type="register"
+          type="dashboard"
           buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
         />
 

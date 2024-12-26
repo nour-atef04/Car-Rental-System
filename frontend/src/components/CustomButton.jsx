@@ -10,9 +10,12 @@ const CustomButton = ({ text, type, buttonClass }) => {
       case "login":
         navigate("/login");
         break;
-        case "register":
-          navigate("/register");
-          break;
+      case "register":
+        navigate("/register");
+        break;
+      case "dashboard":
+        navigate("/dashboard");
+        break;
       default:
         navigate("/");
     }
