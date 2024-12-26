@@ -1,0 +1,21 @@
+.button-solid {
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button-solid:hover {
+  background-color: orange;
+  color: rgb(0, 0, 0);
+}
+
+.button-nonsolid {
+  background-color: none;
+  color: white;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button-nonsolid:hover {
+  background-color: orange;
+  color: black;
+}
