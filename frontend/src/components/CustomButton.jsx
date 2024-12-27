@@ -16,7 +16,10 @@ const CustomButton = ({ text, type, buttonClass }) => {
       case "dashboard":
         navigate("/dashboard");
         break;
-      default: 
+      case "search":
+        navigate("/search");
+        break;
+      default:
     }
   };
 
