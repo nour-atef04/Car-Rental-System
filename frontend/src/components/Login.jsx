@@ -24,14 +24,36 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Reset message and error
     setMessage("");
     setError("");
+
+    // Validate if required fields are empty
+    if (!formData.email || !formData.password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:5000/login", formData);
-      setMessage("Login successful!");
+      // Make POST request to the server for login
+      const response = await axios.post("http://localhost:5000/login", formData);
+
+      setMessage(response.data); // Show success message
+
+      // Reset the form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+        address: "",
+      });
+
       navigate("/dashboard");
     } catch (err) {
+      // Handle any errors (backend validation or server error)
       setError(err.response?.data || "Login failed. Please try again.");
     }
   };
@@ -85,12 +107,11 @@ const Login = () => {
           <CustomButton
             onClick={handleSubmit}
             text="Log-in"
-            type="dashboard"
             buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
           />
         </form>
         {message && <p className="success-message">{message}</p>}
-        {error && <p className="error-message">{error}</p>}
+        {error && <p style={{ color: "red" }} className="mt-3 error-message">{error}</p>}
         <p className="register-link">
           Already have an account?{" "}
           <Link to="/register" className="mx-1" style={{ color: "orange" }}>

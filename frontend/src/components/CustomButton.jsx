@@ -16,8 +16,7 @@ const CustomButton = ({ text, type, buttonClass }) => {
       case "dashboard":
         navigate("/dashboard");
         break;
-      default:
-        navigate("/");
+      default: 
     }
   };
 

@@ -3,7 +3,7 @@ import axios from "axios"; // to make HTTP requests (send data from form to back
 import "./Register.css";
 import CustomButton from "./CustomButton";
 import backgroundImage from "../images/background.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +18,8 @@ const Register = () => {
   const [message, setMessage] = useState(""); // store success message
   const [error, setError] = useState(""); // store error message
 
+  const navigate = useNavigate();
+
   // handle changes in the input fields of the form
   const handleChange = (e) => {
     // takes event object 'e' as a param (contains name and value of input element)
@@ -28,27 +30,40 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    // async fn because it involves making an HTTP request to the backend
-    e.preventDefault(); // prevent reloading the page
-    setMessage(""); // both messages are cleared
+    e.preventDefault(); // Prevent default form submission behavior
+
+    // Reset message and error
+    setMessage("");
     setError("");
+
+    // Validate if required fields are empty
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
     try {
-      // making POST request
+      // Make POST request to the server for registration
       const response = await axios.post(
         "http://localhost:5000/register",
         formData
-      ); // sends formData to backend API
+      );
+
       setMessage(response.data); // Show success message
+      // Reset the form
       setFormData({
-        // resetting form fields
         name: "",
         email: "",
         password: "",
         phone: "",
         address: "",
       });
+
+      // Navigate to the dashboard after successful registration
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data || "Registration failed!"); // If the backend sends an error message in the response, that message is used, o.w, display 'registration failed!'
+      // Handle any errors (backend validation or server error)
+      setError(err.response?.data || "Registration failed!");
     }
   };
 
@@ -81,7 +96,10 @@ const Register = () => {
           Welcome{formData.name ? `, ${formData.name}!` : "!"}
         </h1>
         <h3 className="lead">Please fill in all fields to register</h3>
-        <form onSubmit={handleSubmit} className="register-form px-5">
+        <form
+          onSubmit={handleSubmit}
+          className="register-form px-5 text-center"
+        >
           <input
             type="text"
             name="name"
@@ -125,16 +143,14 @@ const Register = () => {
             onChange={handleChange}
             className="register-input"
           />
+          <CustomButton
+            text="Register"
+            buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
+          />
         </form>
-        {message && <p className="success-message">{message}</p>}
-        {error && <p className="error-message">{error}</p>}
 
-        <CustomButton
-          onClick={handleSubmit}
-          text="Register"
-          type="dashboard"
-          buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
-        />
+        {message && <p className="success-message">{message}</p>}
+        {error && <p style={{ color: "red" }} className="mt-3 error-message">{error}</p>}
 
         <p className="login-link">
           Already have an account?{" "}
