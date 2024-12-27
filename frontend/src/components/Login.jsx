@@ -30,32 +30,32 @@ const Login = () => {
     setMessage("");
     setError("");
 
-    // Validate if required fields are empty
-    if (!formData.email || !formData.password) {
-      setError("Please fill in all required fields.");
-      return;
-    }
+    // // Validate if required fields are empty
+    // if (!formData.email || !formData.password) {
+    //   setError("Please fill in all required fields.");
+    //   return;
+    // }
 
-    try {
-      // Make POST request to the server for login
-      const response = await axios.post("http://localhost:5000/login", formData);
+    // try {
+    //   // Make POST request to the server for login
+    //   const response = await axios.post("http://localhost:5000/login", formData);
 
-      setMessage(response.data); // Show success message
+    //   setMessage(response.data); // Show success message
 
-      // Reset the form
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        phone: "",
-        address: "",
-      });
+    //   // Reset the form
+    //   setFormData({
+    //     name: "",
+    //     email: "",
+    //     password: "",
+    //     phone: "",
+    //     address: "",
+    //   });
 
       navigate("/dashboard");
-    } catch (err) {
-      // Handle any errors (backend validation or server error)
-      setError(err.response?.data || "Login failed. Please try again.");
-    }
+    // } catch (err) {
+    //   // Handle any errors (backend validation or server error)
+    //   setError(err.response?.data || "Login failed. Please try again.");
+    // }
   };
 
   const bodyStyle = {

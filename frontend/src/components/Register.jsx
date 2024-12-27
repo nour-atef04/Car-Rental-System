@@ -8,11 +8,14 @@ import { Link, useNavigate } from "react-router-dom";
 const Register = () => {
   const [formData, setFormData] = useState({
     // initially all empty fields
-    name: "",
+    fname: "",
+    mname: "",
+    lname: "",
     email: "",
     password: "",
     phone: "",
-    address: "",
+    nationality: "",
+    ssn: "",
   });
 
   const [message, setMessage] = useState(""); // store success message
@@ -30,41 +33,53 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    // e.preventDefault(); // Prevent default form submission behavior
 
-    // Reset message and error
-    setMessage("");
-    setError("");
+    // // Reset message and error
+    // setMessage("");
+    // setError("");
 
-    // Validate if required fields are empty
-    if (!formData.name || !formData.email || !formData.password) {
-      setError("Please fill in all required fields.");
-      return;
-    }
+    // // Validate if required fields are empty
+    // if (
+    //   !formData.fname ||
+    //   !formData.mname ||
+    //   !formData.lname ||
+    //   !formData.email ||
+    //   !formData.password ||
+    //   !formData.phone ||
+    //   !formData.nationality ||
+    //   !formData.ssn
+    // ) {
+    //   setError("Please fill in all required fields.");
+    //   return;
+    // }
 
-    try {
+    // try {
       // Make POST request to the server for registration
-      const response = await axios.post(
-        "http://localhost:5000/register",
-        formData
-      );
+      // const response = await axios.post(
+      //   "http://localhost:5000/register",
+      //   formData
+      // );
 
-      setMessage(response.data); // Show success message
-      // Reset the form
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        phone: "",
-        address: "",
-      });
+      // setMessage(response.data); // Show success message
+      // // Reset the form
+      // setFormData({
+      //   fname: "",
+      //   name: "",
+      //   lname: "",
+      //   email: "",
+      //   password: "",
+      //   phone: "",
+      //   nationality: "",
+      //   ssn: "",
+      // });
 
       // Navigate to the dashboard after successful registration
       navigate("/dashboard");
-    } catch (err) {
-      // Handle any errors (backend validation or server error)
-      setError(err.response?.data || "Registration failed!");
-    }
+    // } catch (err) {
+    //   // Handle any errors (backend validation or server error)
+    //   setError(err.response?.data || "Registration failed!");
+    // }
   };
 
   const bodyStyle = {
@@ -100,15 +115,41 @@ const Register = () => {
           onSubmit={handleSubmit}
           className="register-form px-5 text-center"
         >
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="register-input"
-          />
+          <div class="row g-3 my-1">
+            <div class="col">
+              <input
+                type="text"
+                name="fname"
+                placeholder="First Name"
+                value={formData.fname}
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                type="text"
+                name="mname"
+                placeholder="Middle Name"
+                value={formData.mname}
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                type="text"
+                name="lname"
+                placeholder="Last Name"
+                value={formData.lname}
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
+          </div>
           <input
             type="email"
             name="email"
@@ -135,14 +176,30 @@ const Register = () => {
             onChange={handleChange}
             className="register-input"
           />
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-            className="register-input"
-          />
+          <div class="row g-2 my-1">
+            <div class="col">
+              <input
+                type="text"
+                name="nationality"
+                placeholder="Nationality"
+                value={formData.nationality}
+                onChange={handleChange}
+                className="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                type="text"
+                name="ssn"
+                placeholder="SSN"
+                value={formData.ssn}
+                onChange={handleChange}
+                required
+                className="form-control"
+              />
+            </div>
+          </div>
+
           <CustomButton
             text="Register"
             buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
@@ -150,7 +207,11 @@ const Register = () => {
         </form>
 
         {message && <p className="success-message">{message}</p>}
-        {error && <p style={{ color: "red" }} className="mt-3 error-message">{error}</p>}
+        {error && (
+          <p style={{ color: "red" }} className="mt-3 error-message">
+            {error}
+          </p>
+        )}
 
         <p className="login-link">
           Already have an account?{" "}

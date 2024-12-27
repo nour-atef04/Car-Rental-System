@@ -34,8 +34,6 @@ app.post("/register", async (req, res) => {
   // accepts user input from the request body
   const { name, email, password, phone, address } = req.body;
 
-  console.log(req.body);
-
   // validates the presence of required fields
   if (!name || !email || !password) {
     return res.status(400).send("All fields are required.");
