@@ -30,32 +30,23 @@ const Login = () => {
     setMessage("");
     setError("");
 
-    // // Validate if required fields are empty
-    // if (!formData.email || !formData.password) {
-    //   setError("Please fill in all required fields.");
-    //   return;
-    // }
+    try {
+      // Make POST request to the server for login
+      const response = await axios.post("http://localhost:5000/login", formData);
 
-    // try {
-    //   // Make POST request to the server for login
-    //   const response = await axios.post("http://localhost:5000/login", formData);
+      setMessage(response.data); // Show success message
 
-    //   setMessage(response.data); // Show success message
-
-    //   // Reset the form
-    //   setFormData({
-    //     name: "",
-    //     email: "",
-    //     password: "",
-    //     phone: "",
-    //     address: "",
-    //   });
+      // Reset the form
+      setFormData({
+        email: "",
+        password: "",
+      });
 
       navigate("/dashboard");
-    // } catch (err) {
-    //   // Handle any errors (backend validation or server error)
-    //   setError(err.response?.data || "Login failed. Please try again.");
-    // }
+    } catch (err) {
+      // Handle any errors (backend validation or server error)
+      setError(err.response?.data || "Login failed. Please try again.");
+    }
   };
 
   const bodyStyle = {
@@ -86,6 +77,8 @@ const Login = () => {
         <h1 className="text-center">Welcome Back!</h1>
         <h3 className="lead">Please fill in all fields to log-in</h3>
         <form onSubmit={handleSubmit} className="login-form px-5 text-center">
+
+          {/* EMAIL */}
           <input
             type="email"
             name="email"
@@ -95,6 +88,8 @@ const Login = () => {
             required
             className="login-input"
           />
+
+          {/* PASSWORD */}
           <input
             type="password"
             name="password"

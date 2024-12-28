@@ -9,11 +9,11 @@ const Register = () => {
   const [formData, setFormData] = useState({
     // initially all empty fields
     fname: "",
-    mname: "",
+    minit: "",
     lname: "",
     email: "",
     password: "",
-    phone: "",
+    customer_phone: "",
     nationality: "",
     ssn: "",
   });
@@ -33,53 +33,40 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    // e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault(); // Prevent default form submission behavior
 
-    // // Reset message and error
-    // setMessage("");
-    // setError("");
+    // Reset message and error
+    setMessage("");
+    setError("");
 
-    // // Validate if required fields are empty
-    // if (
-    //   !formData.fname ||
-    //   !formData.mname ||
-    //   !formData.lname ||
-    //   !formData.email ||
-    //   !formData.password ||
-    //   !formData.phone ||
-    //   !formData.nationality ||
-    //   !formData.ssn
-    // ) {
-    //   setError("Please fill in all required fields.");
-    //   return;
-    // }
-
-    // try {
+    try {
       // Make POST request to the server for registration
-      // const response = await axios.post(
-      //   "http://localhost:5000/register",
-      //   formData
-      // );
+      const response = await axios.post(
+        "http://localhost:5000/register",
+        formData
+      );
 
-      // setMessage(response.data); // Show success message
-      // // Reset the form
-      // setFormData({
-      //   fname: "",
-      //   name: "",
-      //   lname: "",
-      //   email: "",
-      //   password: "",
-      //   phone: "",
-      //   nationality: "",
-      //   ssn: "",
-      // });
+      setMessage(response.data); // Show success message
+
+      // Reset the form
+      setFormData({
+        fname: "",
+        minit: "",
+        lname: "",
+        email: "",
+        password: "",
+        customer_phone: "",
+        nationality: "",
+        ssn: "",
+      });
 
       // Navigate to the dashboard after successful registration
       navigate("/dashboard");
-    // } catch (err) {
-    //   // Handle any errors (backend validation or server error)
-    //   setError(err.response?.data || "Registration failed!");
-    // }
+      
+    } catch (err) {
+      // Handle any errors (backend validation or server error)
+      setError(err.response?.data || "Registration failed!");
+    }
   };
 
   const bodyStyle = {
@@ -108,13 +95,14 @@ const Register = () => {
     <div style={bodyStyle}>
       <div style={formStyle} className="container p-5 w-50">
         <h1 className="text-center">
-          Welcome{formData.name ? `, ${formData.name}!` : "!"}
+          Welcome{formData.fname ? `, ${formData.fname}!` : "!"}
         </h1>
         <h3 className="lead">Please fill in all fields to register</h3>
         <form
           onSubmit={handleSubmit}
           className="register-form px-5 text-center"
         >
+          {/* FIRST NAME */}
           <div class="row g-3 my-1">
             <div class="col">
               <input
@@ -127,17 +115,22 @@ const Register = () => {
                 className="form-control"
               />
             </div>
-            <div class="col">
+
+            {/* MIDDLE INITIAL */}
+            <div class="col-3">
               <input
                 type="text"
-                name="mname"
-                placeholder="Middle Name"
-                value={formData.mname}
+                name="minit"
+                placeholder="Middle Initial"
+                value={formData.minit}
                 onChange={handleChange}
                 required
+                maxlength="1"
                 className="form-control"
               />
             </div>
+
+            {/* LAST NAME */}
             <div class="col">
               <input
                 type="text"
@@ -150,6 +143,8 @@ const Register = () => {
               />
             </div>
           </div>
+
+          {/* EMAIL */}
           <input
             type="email"
             name="email"
@@ -159,6 +154,8 @@ const Register = () => {
             required
             className="register-input"
           />
+
+          {/* PASSWORD */}
           <input
             type="password"
             name="password"
@@ -168,14 +165,19 @@ const Register = () => {
             required
             className="register-input"
           />
+
+          {/* CUSTOMER PHONE */}
           <input
             type="text"
-            name="phone"
+            name="customer_phone"
             placeholder="Phone"
-            value={formData.phone}
+            value={formData.customer_phone}
             onChange={handleChange}
+            required
             className="register-input"
           />
+
+          {/* NATIONALITY */}
           <div class="row g-2 my-1">
             <div class="col">
               <input
@@ -184,9 +186,12 @@ const Register = () => {
                 placeholder="Nationality"
                 value={formData.nationality}
                 onChange={handleChange}
+                required
                 className="form-control"
               />
             </div>
+
+            {/* SSN */}
             <div class="col">
               <input
                 type="text"
