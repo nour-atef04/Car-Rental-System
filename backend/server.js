@@ -59,20 +59,7 @@ app.post("/register", async (req, res) => {
         }
         return res.status(500).send("Server error, please try again later."); // db error
       }
-
-      // inserts user account (username, password) into the ACCOUNT DB
-      db.query(
-        "INSERT INTO Account (email, password) VALUES (?, ?)",
-        [email, hashedPassword],
-        (err) => {
-          if (err) {
-            return res
-              .status(500)
-              .send("Server error, please try again later.");
-          }
-          return res.status(200).send("Registration successful!");
-        }
-      );
+      res.send("Registration successful!");
     }
   );
 });
@@ -365,81 +352,6 @@ app.get("/reports/car-reservations", (req, res) => {
       res.send(results);
     }
   );
-});
-
-//status of all cars on a specific day
-app.get("/reports/cars-status", (req, res) => {
-  const { specific_date } = req.query;
-
-  if (!specific_date) {
-    return res.status(400).send("A specific date is required.");
-  }
-
-  const query = `
-    SELECT Car.*, 
-           CASE 
-             WHEN EXISTS (
-               SELECT 1 FROM Order_place 
-               WHERE Car.vid = Order_place.vid 
-                 AND ? BETWEEN Order_place.start_day AND Order_place.end_day
-             ) THEN 'Reserved'
-             ELSE 'Available'
-           END AS status
-    FROM Car`;
-
-  db.query(query, [specific_date], (err, results) => {
-    if (err) {
-      return res.status(500).send("Error fetching car statuses.");
-    }
-    res.send(results);
-  });
-});
-
-//reservations of a specific customer
-app.get("/reports/customer-reservations", (req, res) => {
-  const { ssn, nationality } = req.query;
-
-  if (!ssn || !nationality) {
-    return res.status(400).send("SSN and nationality are required.");
-  }
-
-  const query = `
-    SELECT Order_place.*, Customer.*, Car.*
-    FROM Order_place
-    JOIN Customer ON Order_place.ssn = Customer.ssn AND Order_place.nationality = Customer.nationality
-    JOIN Car ON Order_place.vid = Car.vid
-    WHERE Customer.ssn = ? AND Customer.nationality = ?`;
-
-  db.query(query, [ssn, nationality], (err, results) => {
-    if (err) {
-      return res.status(500).send("Error fetching customer reservations.");
-    }
-    res.send(results);
-  });
-});
-
-//daily payments within a specific period
-app.get("/reports/daily-payments", (req, res) => {
-  const { start_date, end_date } = req.query;
-
-  if (!start_date || !end_date) {
-    return res.status(400).send("Start date and end date are required.");
-  }
-
-  const query = `
-    SELECT DATE(Order_place.start_day) AS payment_date, 
-           SUM(Car.rental_rate * DATEDIFF(Order_place.end_day, Order_place.start_day)) AS total_payment
-    FROM Order_place
-    JOIN Car ON Order_place.vid = Car.vid
-    WHERE Order_place.start_day BETWEEN ? AND ?
-    GROUP BY DATE(Order_place.start_day)`;
-
-  db.query(query, [start_date, end_date], (err, results) => {
-    if (err) {
-      return res.status(500).send("Error fetching daily payments.");
-    }
-    res.send(results);
-  });
 });
 
 // Starting server
