@@ -20,7 +20,8 @@ const Register = () => {
   });
 
   const [message, setMessage] = useState(""); // store success message
-  const [error, setError] = useState(""); // store error message
+  const [error, setError] = useState(""); // store frontend validation error message
+  const [serverError, setServerError] = useState(""); // store server error message
 
   const navigate = useNavigate();
 
@@ -82,6 +83,7 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
+    setServerError("");
     e.preventDefault(); // Prevent default form submission behavior
     const validationErrors = validateForm();
 
@@ -113,12 +115,21 @@ const Register = () => {
         // Reset message and error
         setMessage("");
         setError("");
+        setServerError("");
 
         // Navigate to the dashboard after successful registration
         navigate("/dashboard");
       } catch (err) {
-        // Handle any errors (backend validation or server error)
-        setError(err.response?.data || "Registration failed!");
+        setMessage("");
+        setError("");
+
+        if (err.response) {
+          // If the error is from the server
+          setServerError(err.response.data || "Server error occurred!");
+        } else {
+          // If there's no response (network issues, etc.)
+          setServerError("Network error occurred!");
+        }
       }
     }
   };
@@ -282,7 +293,7 @@ const Register = () => {
           />
         </form>
 
-        {message && <p className="success-message">{message}</p>}
+        {message && <p className="mt-3 success-message">{message}</p>}
         {error && (
           <p style={{ color: "red" }} className="mt-3 error-message">
             {Object.values(error).map((err, index) => (
@@ -290,6 +301,12 @@ const Register = () => {
                 {err}
               </p>
             ))}
+          </p>
+        )}
+
+        {serverError && (
+          <p style={{ color: "red" }} className="mt-3 error-message">
+            {serverError}
           </p>
         )}
 
