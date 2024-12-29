@@ -28,7 +28,7 @@ CREATE TABLE Employee (
 );
 
 CREATE TABLE Car (
-    vid INT AUTO_INCREMENT primary key,
+    vid INT primary key,
     type VARCHAR(50) NOT NULL,
     brand VARCHAR(50) NOT NULL,
     capacity VARCHAR(10) NOT NULL,
