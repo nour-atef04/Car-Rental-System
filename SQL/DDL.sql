@@ -13,7 +13,17 @@ CREATE TABLE Customer (
     minit CHAR(1) NOT NULL,
     lname VARCHAR(50) NOT NULL,
     customer_phone VARCHAR(15) NOT NULL,
-    email VARCHAR(255) NOT NULL
+    email VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE Empolyee (
+    store_id INT NOT NULL, 
+    emp_ssn  VARCHAR(15) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    fname VARCHAR(50) NOT NULL,
+    minit CHAR(1) NOT NULL,
+    lname VARCHAR(50) NOT NULL,
+    emp_phone VARCHAR(15) NOT NULL
 );
 
 CREATE TABLE Car (
@@ -27,6 +37,7 @@ CREATE TABLE Car (
     store_id INT NOT NULL,
     year INT NOT NULL,
     color VARCHAR(20) NOT NULL
+    car_image_url VARCHAR(255)
 );
 
 CREATE TABLE Order_place (
@@ -58,6 +69,12 @@ ALTER TABLE Customer
 ADD CONSTRAINT fk_customer FOREIGN KEY(email) REFERENCES Account(email) 
 ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE Employee
+ADD CONSTRAINT pk_employee PRIMARY KEY(emp_ssn);
+
+ALTER TABLE Employee
+ADD CONSTRAINT fk_employee FOREIGN KEY (store_id) REFERENCES Store(store_id)
+ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE Car
 ADD CONSTRAINT fk_car FOREIGN KEY(store_id) REFERENCES Store(store_id) 

@@ -13,6 +13,7 @@ const Register = () => {
     lname: "",
     email: "",
     password: "",
+    confirmPassword: "",
     customer_phone: "",
     nationality: "",
     ssn: "",
@@ -22,6 +23,54 @@ const Register = () => {
   const [error, setError] = useState(""); // store error message
 
   const navigate = useNavigate();
+
+  // Helper to validate numeric fields
+  const isNumeric = (value) => /^[0-9]+$/.test(value);
+
+  // Helper to validate alphabetic fields
+  const isAlphabetic = (value) => /^[A-Za-z]+$/.test(value);
+
+  const validateForm = () => {
+    const validationErrors = {};
+
+    // Alphabetical validation
+    if (!isAlphabetic(formData.fname)) {
+      validationErrors.fname = "First name must contain only letters.";
+    }
+    if (formData.minit && !isAlphabetic(formData.minit)) {
+      validationErrors.minit = "Middle initial must be a letter.";
+    }
+    if (!isAlphabetic(formData.lname)) {
+      validationErrors.lname = "Last name must contain only letters.";
+    }
+    if (!isAlphabetic(formData.nationality)) {
+      validationErrors.nationality = "Nationality must contain only letters.";
+    }
+
+    // Numeric validation
+    if (!isNumeric(formData.ssn)) {
+      validationErrors.ssn = "SSN must be numeric.";
+    }
+    if (!isNumeric(formData.customer_phone)) {
+      validationErrors.customer_phone = "Phone number must be numeric.";
+    }
+
+    if (formData.customer_phone.length < 11) {
+      validationErrors.customer_phone =
+        "Phone number must be at least 11 numbers.";
+    }
+
+    // Password validation
+    if (formData.password.length < 6) {
+      validationErrors.password = "Password must be at least 6 characters.";
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      validationErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    return validationErrors;
+  };
 
   // handle changes in the input fields of the form
   const handleChange = (e) => {
@@ -34,38 +83,43 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
+    const validationErrors = validateForm();
 
-    // Reset message and error
-    setMessage("");
-    setError("");
+    if (Object.keys(validationErrors).length > 0) {
+      setError(validationErrors);
+    } else {
+      try {
+        // Make POST request to the server for registration
+        const response = await axios.post(
+          "http://localhost:5000/register",
+          formData
+        );
 
-    try {
-      // Make POST request to the server for registration
-      const response = await axios.post(
-        "http://localhost:5000/register",
-        formData
-      );
+        setMessage(response.data); // Show success message
 
-      setMessage(response.data); // Show success message
+        // Reset the form
+        setFormData({
+          fname: "",
+          minit: "",
+          lname: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          customer_phone: "",
+          nationality: "",
+          ssn: "",
+        });
 
-      // Reset the form
-      setFormData({
-        fname: "",
-        minit: "",
-        lname: "",
-        email: "",
-        password: "",
-        customer_phone: "",
-        nationality: "",
-        ssn: "",
-      });
+        // Reset message and error
+        setMessage("");
+        setError("");
 
-      // Navigate to the dashboard after successful registration
-      navigate("/dashboard");
-      
-    } catch (err) {
-      // Handle any errors (backend validation or server error)
-      setError(err.response?.data || "Registration failed!");
+        // Navigate to the dashboard after successful registration
+        navigate("/dashboard");
+      } catch (err) {
+        // Handle any errors (backend validation or server error)
+        setError(err.response?.data || "Registration failed!");
+      }
     }
   };
 
@@ -103,8 +157,8 @@ const Register = () => {
           className="register-form px-5 text-center"
         >
           {/* FIRST NAME */}
-          <div class="row g-3 my-1">
-            <div class="col">
+          <div className="row g-3">
+            <div className="col">
               <input
                 type="text"
                 name="fname"
@@ -112,12 +166,12 @@ const Register = () => {
                 value={formData.fname}
                 onChange={handleChange}
                 required
-                className="form-control"
+                className="register-input"
               />
             </div>
 
             {/* MIDDLE INITIAL */}
-            <div class="col-3">
+            <div className="col-3">
               <input
                 type="text"
                 name="minit"
@@ -126,12 +180,12 @@ const Register = () => {
                 onChange={handleChange}
                 required
                 maxlength="1"
-                className="form-control"
+                className="register-input"
               />
             </div>
 
             {/* LAST NAME */}
-            <div class="col">
+            <div className="col">
               <input
                 type="text"
                 name="lname"
@@ -139,7 +193,7 @@ const Register = () => {
                 value={formData.lname}
                 onChange={handleChange}
                 required
-                className="form-control"
+                className="register-input"
               />
             </div>
           </div>
@@ -155,16 +209,33 @@ const Register = () => {
             className="register-input"
           />
 
-          {/* PASSWORD */}
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="register-input"
-          />
+          <div className="row g-3">
+            <div className="col">
+              {/* PASSWORD */}
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="register-input"
+              />
+            </div>
+
+            <div className="col">
+              {/* CONFIRM PASSWORD */}
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="register-input"
+              />
+            </div>
+          </div>
 
           {/* CUSTOMER PHONE */}
           <input
@@ -178,8 +249,8 @@ const Register = () => {
           />
 
           {/* NATIONALITY */}
-          <div class="row g-2 my-1">
-            <div class="col">
+          <div className="row g-3">
+            <div className="col">
               <input
                 type="text"
                 name="nationality"
@@ -187,12 +258,12 @@ const Register = () => {
                 value={formData.nationality}
                 onChange={handleChange}
                 required
-                className="form-control"
+                className="register-input"
               />
             </div>
 
             {/* SSN */}
-            <div class="col">
+            <div className="col">
               <input
                 type="text"
                 name="ssn"
@@ -200,7 +271,7 @@ const Register = () => {
                 value={formData.ssn}
                 onChange={handleChange}
                 required
-                className="form-control"
+                className="register-input"
               />
             </div>
           </div>
@@ -214,7 +285,11 @@ const Register = () => {
         {message && <p className="success-message">{message}</p>}
         {error && (
           <p style={{ color: "red" }} className="mt-3 error-message">
-            {error}
+            {Object.values(error).map((err, index) => (
+              <p className="m-0" key={index}>
+                {err}
+              </p>
+            ))}
           </p>
         )}
 

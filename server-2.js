@@ -32,24 +32,21 @@ db.connect((err) => {
 // Register Endpoint
 app.post("/register", async (req, res) => {
   // accepts user input from the request body
-  const {
-    fname,
-    minit,
-    lname,
-    email,
-    password,
-    customer_phone,
-    nationality,
-    ssn,
-  } = req.body;
+  const { ssn , nationality , fname , minit ,lname , customer_phone , email , password } = req.body;
+
+  // validates the presence of required fields
+  if (!ssn || !nationality || !fname || !minit || !lname || !customer_phone || !email || !password) {
+    return res.status(400).send("All fields are required.");
+  }
+
 
   // hashes password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // inserts user data into the CUSTOMER DB
+  // inserts user data into the DB
   db.query(
-    "INSERT INTO Customer (ssn, nationality, fname, minit, lname, customer_phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [ssn, nationality, fname, minit, lname, customer_phone, email],
+    "INSERT INTO Customer (ssn , nationality , fname , minit ,lname , customer_phone , email) VALUES (?, ?, ?, ?, ?)",
+    [ssn , nationality , fname , minit ,lname , customer_phone , email ],
     (err) => {
       if (err) {
         // handles errors and sends appropriate responses to the client (frontend)
@@ -57,30 +54,20 @@ app.post("/register", async (req, res) => {
           // duplicate entry
           return res.status(400).send("Email already exists.");
         }
-        return res.status(500).send("Server error, please try again later."); // db error
+        return res.status(500).send("Server error."); // db error
       }
-
-      // inserts user account (username, password) into the ACCOUNT DB
-      db.query(
-        "INSERT INTO Account (email, password) VALUES (?, ?)",
-        [email, hashedPassword],
-        (err) => {
-          if (err) {
-            return res
-              .status(500)
-              .send("Server error, please try again later.");
-          }
-          return res.status(200).send("Registration successful!");
-        }
-      );
+      res.send("Registration successful!");
     }
   );
 });
 
 // Login Endpoint
 app.post("/login", async (req, res) => {
-  // accepts user input from the request body
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required.");
+  }
 
   db.query(
     "SELECT * FROM Account WHERE email = ?",
@@ -102,54 +89,24 @@ app.post("/login", async (req, res) => {
       }
 
       // Send a success message if credentials are valid
-      res.status(200).send("Login successful!");
+      res.send("Login successful!");
     }
   );
 });
 
 // Register a New Car Endpoint
 app.post("/register-car", (req, res) => {
-  const {
-    type,
-    brand,
-    capacity,
-    status,
-    rental_rate,
-    insurance,
-    store_id,
-    year,
-    color,
-  } = req.body;
+  const { type, brand, capacity, status, rental_rate, insurance, store_id, year, color } = req.body;
 
   // Check for missing fields
-  if (
-    !type ||
-    !brand ||
-    !capacity ||
-    !status ||
-    !rental_rate ||
-    !insurance ||
-    !store_id ||
-    !year ||
-    !color
-  ) {
+  if (!type || !brand || !capacity || !status || !rental_rate || !insurance || !store_id || !year || !color) {
     return res.status(400).send("All fields are required to register a car.");
   }
 
   // Insert the car into the Car table
   db.query(
     "INSERT INTO Car (type, brand, capacity, status, rental_rate, insurance, store_id, year, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [
-      type,
-      brand,
-      capacity,
-      status,
-      rental_rate,
-      insurance,
-      store_id,
-      year,
-      color,
-    ],
+    [type, brand, capacity, status, rental_rate, insurance, store_id, year, color],
     (err) => {
       if (err) {
         return res.status(500).send("Error registering car.");
@@ -166,9 +123,7 @@ app.put("/update-car-status/:vid", (req, res) => {
 
   // Validate inputs
   if (!vid || !status) {
-    return res
-      .status(400)
-      .send("new Status and Vehicle ID are required to update the car status.");
+    return res.status(400).send("new Status and Vehicle ID are required to update the car status.");
   }
 
   // Update the car's status
@@ -240,6 +195,7 @@ app.post("/reserve-car", (req, res) => {
     }
   );
 });
+
 
 // Search Available Cars Endpoint
 app.get("/search-cars", (req, res) => {
@@ -327,16 +283,12 @@ app.get("/reports/reservations-period", (req, res) => {
     JOIN Car ON Order_place.vid = Car.vid
     WHERE Order_place.start_day BETWEEN ? AND ? OR Order_place.end_day BETWEEN ? AND ?`;
 
-  db.query(
-    query,
-    [start_date, end_date, start_date, end_date],
-    (err, results) => {
-      if (err) {
-        return res.status(500).send("Error fetching reservations.");
-      }
-      res.send(results);
+  db.query(query, [start_date, end_date, start_date, end_date], (err, results) => {
+    if (err) {
+      return res.status(500).send("Error fetching reservations.");
     }
-  );
+    res.send(results);
+  });
 });
 
 //reservations of a specific car within a period
@@ -344,9 +296,7 @@ app.get("/reports/car-reservations", (req, res) => {
   const { vid, start_date, end_date } = req.query;
 
   if (!vid || !start_date || !end_date) {
-    return res
-      .status(400)
-      .send("Vehicle ID, start date, and end date are required.");
+    return res.status(400).send("Vehicle ID, start date, and end date are required.");
   }
 
   const query = `
@@ -355,16 +305,12 @@ app.get("/reports/car-reservations", (req, res) => {
     JOIN Car ON Order_place.vid = Car.vid
     WHERE Order_place.vid = ? AND (Order_place.start_day BETWEEN ? AND ? OR Order_place.end_day BETWEEN ? AND ?)`;
 
-  db.query(
-    query,
-    [vid, start_date, end_date, start_date, end_date],
-    (err, results) => {
-      if (err) {
-        return res.status(500).send("Error fetching car reservations.");
-      }
-      res.send(results);
+  db.query(query, [vid, start_date, end_date, start_date, end_date], (err, results) => {
+    if (err) {
+      return res.status(500).send("Error fetching car reservations.");
     }
-  );
+    res.send(results);
+  });
 });
 
 //status of all cars on a specific day
@@ -441,6 +387,11 @@ app.get("/reports/daily-payments", (req, res) => {
     res.send(results);
   });
 });
+
+
+
+
+
 
 // Starting server
 const PORT = 5000;

@@ -23,12 +23,12 @@ INSERT INTO Store (store_id, store_phone, street, city, country) VALUES
 (5, '5555555555', '789 Birch St', 'London', 'UK');
 
 -- Populate Car Table
-INSERT INTO Car (vid, type, brand, capacity, status, rental_rate, insurance, store_id, year, color) VALUES
-(1, 'SUV', 'Toyota', '5', 'Available', 50.00, 'Full', 1, 2020, 'White'),
-(2, 'Sedan', 'Honda', '4', 'Rented', 40.00, 'Partial', 1, 2019, 'Black'),
-(3, 'Truck', 'Ford', '2', 'Out of Service', 70.00, 'None', 2, 2021, 'Red'),
-(4, 'Compact', 'Chevrolet', '4', 'Available', 30.00, 'Full', 3, 2022, 'Blue'),
-(5, 'Convertible', 'BMW', '2', 'Rented', 90.00, 'Full', 4, 2022, 'Black');
+INSERT INTO Car (vid, type, brand, capacity, status, rental_rate, insurance, store_id, year, color, car_image_url) VALUES
+(1, 'SUV', 'Toyota', '5', 'Available', 50.00, 'Full', 1, 2020, 'White', 'https://images.dealer.com/autodata/us/color/2025/USD50TOS202B0/040.jpg?impolicy=resize&w=640'),
+(2, 'Sedan', 'Honda', '4', 'Rented', 40.00, 'Partial', 1, 2019, 'Black', 'https://di-sitebuilder-assets.s3.amazonaws.com/Honda/ModelLandingPage/Civic-Sedan/2022/trim-EX.jpg'),
+(3, 'Truck', 'Ford', '2', 'Out of Service', 70.00, 'None', 2, 2021, 'Red', 'https://www.villageford.com/static/dealer-14561/966054.jpg'),
+(4, 'Compact', 'Chevrolet', '4', 'Available', 30.00, 'Full', 3, 2022, 'Blue', 'https://65e81151f52e248c552b-fe74cd567ea2f1228f846834bd67571e.ssl.cf1.rackcdn.com/ldm-images/2019-Chevrolet-Trax-Pacific-Blue-Metallic.jpg'),
+(5, 'Convertible', 'BMW', '2', 'Rented', 90.00, 'Full', 4, 2022, 'Black', 'https://images.dealer.com/ddc/vehicles/2025/BMW/430/Convertible/trim_i_xDrive_1aa987/color/Black%20Sapphire%20Metallic-475-13%2C13%2C13-640-en_US.jpg?impolicy=downsize_bkpt&imdensity=1&w=520');
 
 -- Populate Order_place Table
 INSERT INTO Order_place (order_id, start_day, end_day, payment_type, ssn, nationality, vid) VALUES
