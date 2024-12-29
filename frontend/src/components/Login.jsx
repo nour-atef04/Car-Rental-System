@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import "../components/CSS/Login.css";
 import backgroundImage from "../images/background.png";
 import CustomButton from "./CustomButton";
 import { Link } from "react-router-dom";

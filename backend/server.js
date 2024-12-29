@@ -265,35 +265,16 @@ app.post("/reserve-car", (req, res) => {
 
 // Search Available Cars Endpoint
 app.get("/search-cars", (req, res) => {
-  const { type, brand, capacity, year, color } = req.body; // Get form data from the request body
-
-  // Build the query dynamically based on provided filters
-  let query = "SELECT * FROM Car WHERE status = 'Available'";
+  const { query } = req.query; // Get the query parameter from the request
+  let sqlQuery = "SELECT * FROM Car WHERE status = 'Available'";
   const params = [];
 
-  if (type) {
-    query += " AND type = ?";
-    params.push(type);
-  }
-  if (brand) {
-    query += " AND brand = ?";
-    params.push(brand);
-  }
-  if (capacity) {
-    query += " AND capacity = ?";
-    params.push(capacity);
-  }
-  if (year) {
-    query += " AND year = ?";
-    params.push(year);
-  }
-  if (color) {
-    query += " AND color = ?";
-    params.push(color);
+  if (query) {
+    sqlQuery += " AND (type LIKE ? OR brand LIKE ? OR capacity LIKE ? OR color LIKE ?)";
+    params.push(`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`);
   }
 
-  // Execute the query
-  db.query(query, params, (err, results) => {
+  db.query(sqlQuery, params, (err, results) => {
     if (err) {
       return res.status(500).json({ error: "Error searching for cars." });
     }

@@ -4,7 +4,6 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Cover from "./components/Cover";
 import Dashboard from "./components/Dashboard";
-import SearchForm from "./components/SearchForm";
 import ControlPanel from "./components/ControlPanel";
 
 const App = () => {
@@ -15,7 +14,6 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/search" element={<SearchForm />} />
         <Route path="/control" element={<ControlPanel />} />
       </Routes>
     </Router>

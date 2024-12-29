@@ -1,29 +1,23 @@
 import React, { useState } from "react";
-import axios from "axios"; // to make HTTP requests (send data from form to backend)
-import "../components/CSS/Register.css";
-import CustomButton from "./CustomButton";
-import backgroundImage from "../images/background.png";
-import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./CSS/RegisterEmployeePanel.css";
 
-const Register = () => {
+const RegisterEmployeePanel = () => {
   const [formData, setFormData] = useState({
-    // initially all empty fields
+    store_id: "",
+    emp_ssn: "",
+    email: "",
+    password: "",
+    confirm_password: "",
     fname: "",
     minit: "",
     lname: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    customer_phone: "",
-    nationality: "",
-    ssn: "",
+    emp_phone: "",
   });
 
-  const [message, setMessage] = useState(""); // store success message
-  const [error, setError] = useState(""); // store frontend validation error message
-  const [serverError, setServerError] = useState(""); // store server error message
-
-  const navigate = useNavigate();
+  const [message, setMessage] = useState(""); // Store success message
+  const [error, setError] = useState({}); // Store frontend validation error messages
+  const [serverError, setServerError] = useState(""); // Store server error message
 
   // Helper to validate numeric fields
   const isNumeric = (value) => /^[0-9]+$/.test(value);
@@ -44,21 +38,17 @@ const Register = () => {
     if (!isAlphabetic(formData.lname)) {
       validationErrors.lname = "Last name must contain only letters.";
     }
-    if (!isAlphabetic(formData.nationality)) {
-      validationErrors.nationality = "Nationality must contain only letters.";
-    }
 
     // Numeric validation
-    if (!isNumeric(formData.ssn)) {
-      validationErrors.ssn = "SSN must be numeric.";
+    if (!isNumeric(formData.emp_ssn)) {
+      validationErrors.emp_ssn = "SSN must be numeric.";
     }
-    if (!isNumeric(formData.customer_phone)) {
-      validationErrors.customer_phone = "Phone number must be numeric.";
+    if (!isNumeric(formData.emp_phone)) {
+      validationErrors.emp_phone = "Phone number must be numeric.";
     }
 
-    if (formData.customer_phone.length < 11) {
-      validationErrors.customer_phone =
-        "Phone number must be at least 11 numbers.";
+    if (formData.emp_phone.length < 11) {
+      validationErrors.emp_phone = "Phone number must be at least 11 digits.";
     }
 
     // Password validation
@@ -66,88 +56,61 @@ const Register = () => {
       validationErrors.password = "Password must be at least 6 characters.";
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      validationErrors.confirmPassword = "Passwords do not match.";
+    if (formData.password !== formData.confirm_password) {
+      validationErrors.confirm_password = "Passwords do not match.";
     }
 
     return validationErrors;
   };
 
-  // handle changes in the input fields of the form
   const handleChange = (e) => {
-    // takes event object 'e' as a param (contains name and value of input element)
     setFormData({
-      ...formData, // spreads existing states so that it doesn't overwrite other fields, only update the one that changed
+      ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     setServerError("");
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
       setError(validationErrors);
     } else {
       try {
-        // Make POST request to the server for registration
         const response = await axios.post(
-          "http://localhost:5000/register",
+          "http://localhost:5000/emp_register",
           formData
         );
 
-        setMessage(response.data); // Show success message
+        setMessage(
+          response.data.message || "Employee registered successfully!"
+        );
 
-        // Reset the form
         setFormData({
+          store_id: "",
+          emp_ssn: "",
+          email: "",
+          password: "",
+          confirm_password: "",
           fname: "",
           minit: "",
           lname: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          customer_phone: "",
-          nationality: "",
-          ssn: "",
+          emp_phone: "",
         });
-
-        // Reset message and error
-        setMessage("");
-        setError("");
-        setServerError("");
-
-        // Navigate to the dashboard after successful registration
-        navigate("/dashboard");
+        setError({});
       } catch (err) {
-        setMessage("");
-        setError("");
-
         if (err.response) {
-          // If the error is from the server
           setServerError(err.response.data || "Server error occurred!");
         } else {
-          // If there's no response (network issues, etc.)
           setServerError("Network error occurred!");
         }
       }
     }
   };
 
-  const bodyStyle = {
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: "fill",
-    backgroundRepeat: "no-repeat",
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
   const formStyle = {
-    backdropFilter: "blur(30px)",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -157,16 +120,45 @@ const Register = () => {
   };
 
   return (
-    <div style={bodyStyle}>
-      <div style={formStyle} className="container p-5 w-50">
-        <h1 className="text-center">
-          Welcome{formData.fname ? `, ${formData.fname}!` : "!"}
-        </h1>
-        <h3 className="lead">Please fill in all fields to register</h3>
+
+    <div>
+      <div
+        style={formStyle}
+        className="register-employee-panel container p-5 w-50"
+      >
+        <h1 className="register-employee-title">Register a New Employee</h1>
         <form
           onSubmit={handleSubmit}
           className="register-form px-5 text-center"
         >
+          {/* STORE ID*/}
+          <div className="row g-3">
+            <div className="col">
+              <input
+                type="text"
+                name="store_id"
+                placeholder="Store ID"
+                value={formData.store_id}
+                onChange={handleChange}
+                required
+                className="register-input"
+              />
+            </div>
+
+            {/* EMPLOYEE SSN */}
+            <div className="col">
+              <input
+                type="text"
+                name="emp_ssn"
+                placeholder="Employee SSN"
+                value={formData.emp_ssn}
+                onChange={handleChange}
+                required
+                className="register-input"
+              />
+            </div>
+          </div>
+
           {/* FIRST NAME */}
           <div className="row g-3">
             <div className="col">
@@ -238,9 +230,9 @@ const Register = () => {
               {/* CONFIRM PASSWORD */}
               <input
                 type="password"
-                name="confirmPassword"
+                name="confirm_password"
                 placeholder="Confirm Password"
-                value={formData.confirmPassword}
+                value={formData.confirm_password}
                 onChange={handleChange}
                 required
                 className="register-input"
@@ -248,48 +240,15 @@ const Register = () => {
             </div>
           </div>
 
-          {/* CUSTOMER PHONE */}
+          {/* EMPLOYEE PHONE */}
           <input
             type="text"
-            name="customer_phone"
+            name="emp_phone"
             placeholder="Phone"
-            value={formData.customer_phone}
+            value={formData.emp_phone}
             onChange={handleChange}
             required
             className="register-input"
-          />
-
-          {/* NATIONALITY */}
-          <div className="row g-3">
-            <div className="col">
-              <input
-                type="text"
-                name="nationality"
-                placeholder="Nationality"
-                value={formData.nationality}
-                onChange={handleChange}
-                required
-                className="register-input"
-              />
-            </div>
-
-            {/* SSN */}
-            <div className="col">
-              <input
-                type="text"
-                name="ssn"
-                placeholder="SSN"
-                value={formData.ssn}
-                onChange={handleChange}
-                required
-                className="register-input"
-              />
-            </div>
-          </div>
-
-          <CustomButton
-            text="Register"
-            buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
           />
         </form>
 
@@ -309,16 +268,9 @@ const Register = () => {
             {serverError}
           </p>
         )}
-
-        <p className="login-link">
-          Already have an account?{" "}
-          <Link to="/login" className="mx-1" style={{ color: "orange" }}>
-            login
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default RegisterEmployeePanel;
