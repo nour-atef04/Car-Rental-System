@@ -14,10 +14,10 @@ CREATE TABLE Customer (
     lname VARCHAR(50) NOT NULL,
     customer_phone VARCHAR(15) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    drivers_license INT NOT NUL
+    drivers_license INT NOT NULL
 );
 
-CREATE TABLE Empolyee (
+CREATE TABLE Employee (
     store_id INT , 
     emp_ssn  VARCHAR(15) NOT NULL,
     email VARCHAR(255) NOT NULL,
