@@ -5,7 +5,6 @@ import CarGrid from "./CarGrid";
 import Footer from "./Footer";
 
 const Dashboard = () => {
-
   return (
     <>
       <NavBar />

@@ -8,10 +8,16 @@ const CarTile = (props) => {
     <div className="col">
       <div className="card shadow-sm">
         <div className="card-header">
-          <h4 className="car-type">{props.type}</h4>
-          <h5 className="car-brand">{props.brand}</h5>
+          <h4 className="car-type">{props.brand}</h4>
+          <h5 className="car-brand">{props.type}</h5>
         </div>
-        <img width="100%" height="225" src={props.imageURL} alt={props.type} />
+        <img
+          width="100%"
+          height="225"
+          src={props.imageURL}
+          alt={props.type}
+          style={{ objectFit: "cover" }}
+        />
         <div className="card-body">
           <p className="card-text">{props.detail}</p>
           <div className="d-flex justify-content-between">
@@ -25,22 +31,13 @@ const CarTile = (props) => {
             </div>
           </div>
           <div className="d-flex justify-content-center">
-            <div className="btn-group">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary"
-                onClick={props.onSeeMore}
-              >
-                See more
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary"
-                onClick={props.onRent}
-              >
-                Rent
-              </button>
-            </div>
+            <button
+              type="button"
+              className="btn btn-lg btn-primary rent-btn"
+              onClick={props.onRent}
+            >
+              Rent
+            </button>
           </div>
         </div>
       </div>

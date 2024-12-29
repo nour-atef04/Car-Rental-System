@@ -15,7 +15,7 @@ const db = mysql.createConnection({
   host: "localhost", // XAMPP default MySQL host
   user: "root", // XAMPP default MySQL user
   password: "", // default is empty for XAMPP
-  database: "car-rental-system", // database name
+  database: "car_rental_system", // database name
 });
 
 // Connect to the database
@@ -29,7 +29,7 @@ db.connect((err) => {
 
 // Register Endpoint
 app.post("/register", async (req, res) => {
-  // Accepts user input from the request body
+  // accepts user input from the request body
   const {
     fname,
     minit,
@@ -42,40 +42,33 @@ app.post("/register", async (req, res) => {
   } = req.body;
 
   try {
-    // Hash the password
+    // hashes password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert into the Account table first
+    // inserts user data into the CUSTOMER DB
     db.query(
-      "INSERT INTO Account (email, password) VALUES (?, ?)",
-      [email, hashedPassword],
-      (err, accountResult) => {
+      "INSERT INTO Customer (ssn, nationality, fname, minit, lname, customer_phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [ssn, nationality, fname, minit, lname, customer_phone, email],
+      (err) => {
         if (err) {
-          // Handle errors related to the Account insertion
+          // handles errors and sends appropriate responses to the client (frontend)
           if (err.code === "ER_DUP_ENTRY") {
+            // duplicate entry
             return res.status(400).send("Email already exists.");
           }
-          return res
-            .status(500)
-            .send(
-              "Server error: Cannot create account. Please try again later."
-            );
+          return res.status(500).send("Server error, please try again later."); // db error
         }
 
-        // Insert into the Customer table using the email from Account
+        // inserts user account (username, password) into the ACCOUNT DB
         db.query(
-          "INSERT INTO Customer (ssn, nationality, fname, minit, lname, customer_phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          [ssn, nationality, fname, minit, lname, customer_phone, email],
+          "INSERT INTO Account (email, password) VALUES (?, ?)",
+          [email, hashedPassword],
           (err) => {
             if (err) {
               return res
                 .status(500)
-                .send(
-                  "Server error: Cannot add customer info. Please try again later."
-                );
+                .send("Server error, please try again later.");
             }
-
-            // Registration successful
             return res.status(200).send("Registration successful!");
           }
         );
@@ -89,11 +82,12 @@ app.post("/register", async (req, res) => {
 
 // Login Endpoint
 app.post("/login", async (req, res) => {
-  const { email, password, user_type } = req.body;
+  const { email, password, customer_type } = req.body;
 
-  console.log(req.body);
-
-  if (user_type == "customer") {
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required.");
+  }
+  if (customer_type) {
     db.query(
       "SELECT * FROM Account NATURAL JOIN Customer WHERE email = ?",
       [email],
@@ -130,9 +124,7 @@ app.post("/login", async (req, res) => {
         }
 
         const user = results[0];
-        var match = 0;
-        // const match = await bcrypt.compare(password, user.password);
-        if (password === user.password) match = 1;
+        const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
           return res.status(400).send("Incorrect password. Please try again.");
@@ -229,10 +221,12 @@ app.post("/reserve-car", (req, res) => {
 
   // Validate inputs
   if (!start_day || !end_day || !payment_type || !ssn || !nationality || !vid) {
-    return res.status(400).json({
-      success: false,
-      error: "All fields are required to reserve a car.",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: "All fields are required to reserve a car.",
+      });
   }
 
   // Insert reservation into the Order_place table
@@ -397,10 +391,12 @@ app.get("/reports/reservations-period", (req, res) => {
 
   // Check if start date and end date are provided
   if (!start_date || !end_date) {
-    return res.status(400).json({
-      success: false,
-      message: "Start date and end date are required.",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Start date and end date are required.",
+      });
   }
 
   const query = `
@@ -415,11 +411,13 @@ app.get("/reports/reservations-period", (req, res) => {
     [start_date, end_date, start_date, end_date],
     (err, results) => {
       if (err) {
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching reservations.",
-          error: err,
-        });
+        return res
+          .status(500)
+          .json({
+            success: false,
+            message: "Error fetching reservations.",
+            error: err,
+          });
       }
       // Return the results as a JSON object
       res.json({ success: true, data: results });
@@ -433,10 +431,12 @@ app.get("/reports/car-reservations", (req, res) => {
 
   // Check if vehicle ID, start date, and end date are provided
   if (!vid || !start_date || !end_date) {
-    return res.status(400).json({
-      success: false,
-      message: "Vehicle ID, start date, and end date are required.",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Vehicle ID, start date, and end date are required.",
+      });
   }
 
   const query = `
@@ -450,11 +450,13 @@ app.get("/reports/car-reservations", (req, res) => {
     [vid, start_date, end_date, start_date, end_date],
     (err, results) => {
       if (err) {
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching car reservations.",
-          error: err,
-        });
+        return res
+          .status(500)
+          .json({
+            success: false,
+            message: "Error fetching car reservations.",
+            error: err,
+          });
       }
       // Return the results as a JSON object
       res.json({ success: true, data: results });
@@ -510,11 +512,13 @@ app.get("/reports/customer-reservations", (req, res) => {
 
   db.query(query, [ssn, nationality], (err, results) => {
     if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Error fetching customer reservations.",
-        error: err,
-      });
+      return res
+        .status(500)
+        .json({
+          success: false,
+          message: "Error fetching customer reservations.",
+          error: err,
+        });
     }
     // Return the results as a JSON object
     res.json({ success: true, data: results });
@@ -527,10 +531,12 @@ app.get("/reports/daily-payments", (req, res) => {
 
   // Check if both start_date and end_date are provided
   if (!start_date || !end_date) {
-    return res.status(400).json({
-      success: false,
-      message: "Start date and end date are required.",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Start date and end date are required.",
+      });
   }
 
   const query = `
@@ -543,11 +549,13 @@ app.get("/reports/daily-payments", (req, res) => {
 
   db.query(query, [start_date, end_date], (err, results) => {
     if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Error fetching daily payments.",
-        error: err,
-      });
+      return res
+        .status(500)
+        .json({
+          success: false,
+          message: "Error fetching daily payments.",
+          error: err,
+        });
     }
     // Return the results as a JSON object
     res.json({ success: true, data: results });

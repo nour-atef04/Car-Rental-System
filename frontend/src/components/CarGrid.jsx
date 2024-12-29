@@ -1,23 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import CarTile from "./CarTile";
+import RentPopup from "./RentPopup";
 
 const CarGrid = () => {
-  // Example array of cars
-  const cars = Array(5).fill({
-    type: "mitsbushi",
-    brand: "lancer",
-    detail:
-      "CAR DESCRIPTION: Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minus esse recusandae quibusdam et, unde quis alias architecto ullam officiis inventore tempora, veniam labore ea quos debitis eveniet laborum perferendis?",
-    rentalRate: 50,
-    capacity: 5,
-  });
+  const [cars, setCars] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
 
-  const handleSeeMore = () => {
-    //
+  useEffect(() => {
+    const fetchCars = async () => {
+      const response = await fetch("http://localhost:5000/search-cars");
+      const data = await response.json();
+      setCars(data.cars);
+    };
+
+    fetchCars();
+  }, []);
+
+  const handleRent = (car) => {
+    setSelectedCar(car);
+    setShowModal(true);
   };
 
-  const handleRent = () => {
-    //
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleSubmitRent = () => {
+    // code yet to handle
+    alert("Car rented successfully!");
+    setShowModal(false);
   };
 
   return (
@@ -32,17 +44,26 @@ const CarGrid = () => {
                 type={car.type}
                 brand={car.brand}
                 capacity={car.capacity}
-                detail={car.detail}
-                rentalRate={car.rentalRate}
-                status={car.status}
-                imageURL={car.imageURL}
-                onSeeMore={handleSeeMore}
-                onRent={handleRent}
+                rentalRate={car.rental_rate}
+                imageURL={car.car_image_url}
+                onRent={() => handleRent(car)}
               />
             );
           })}
         </div>
       </div>
+
+      {showModal && selectedCar && (
+        <RentPopup
+          vid={selectedCar.vid}
+          type={selectedCar.type}
+          brand={selectedCar.brand}
+          capacity={selectedCar.capacity}
+          rentalRate={selectedCar.rental_rate}
+          onCloseModal={handleCloseModal}
+          onRentClick={handleSubmitRent}
+        />
+      )}
     </div>
   );
 };

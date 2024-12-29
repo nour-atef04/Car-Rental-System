@@ -10,6 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    user_type: "", // employee or customer
   });
 
   const [message, setMessage] = useState("");
@@ -43,6 +44,7 @@ const Login = () => {
       setFormData({
         email: "",
         password: "",
+        user_type: "",
       });
 
       // Reset message and error
@@ -109,6 +111,40 @@ const Login = () => {
             required
             className="login-input"
           />
+
+          {/* USER TYPE */}
+          <div className="d-flex justify-content-center align-items-center mt-3">
+            <div className="form-check me-4">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="employee"
+                name="user_type"
+                value="employee"
+                onChange={handleChange}
+                required
+              />
+              <label className="form-check-label" htmlFor="employee">
+                Employee
+              </label>
+            </div>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                id="customer"
+                name="user_type"
+                value="customer"
+                onChange={handleChange}
+                required
+              />
+              <label className="form-check-label" htmlFor="customer">
+                Customer
+              </label>
+            </div>
+          </div>
+
+          {/* LOGIN BUTTON */}
           <CustomButton
             text="Log-in"
             buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
