@@ -5,11 +5,9 @@ import cors from "cors"; // allows frontend to interact with this API
 const app = express();
 
 // middleware to parse JSON data and convert them to javascript object
-// with this we can easily access the data sent in the request within req.body
 app.use(express.json());
 
 // middleware to ensure the API can be accessed from different origins
-// without it, browser will block any API requests from frontend
 app.use(cors());
 
 // MySQL connection configuration
@@ -43,38 +41,43 @@ app.post("/register", async (req, res) => {
     ssn,
   } = req.body;
 
-  // hashes password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    // hashes password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  // inserts user data into the CUSTOMER DB
-  db.query(
-    "INSERT INTO Customer (ssn, nationality, fname, minit, lname, customer_phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
-    [ssn, nationality, fname, minit, lname, customer_phone, email],
-    (err) => {
-      if (err) {
-        // handles errors and sends appropriate responses to the client (frontend)
-        if (err.code === "ER_DUP_ENTRY") {
-          // duplicate entry
-          return res.status(400).send("Email already exists.");
-        }
-        return res.status(500).send("Server error, please try again later."); // db error
-      }
-
-      // inserts user account (username, password) into the ACCOUNT DB
-      db.query(
-        "INSERT INTO Account (email, password) VALUES (?, ?)",
-        [email, hashedPassword],
-        (err) => {
-          if (err) {
-            return res
-              .status(500)
-              .send("Server error, please try again later.");
+    // inserts user data into the CUSTOMER DB
+    db.query(
+      "INSERT INTO Customer (ssn, nationality, fname, minit, lname, customer_phone, email) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [ssn, nationality, fname, minit, lname, customer_phone, email],
+      (err) => {
+        if (err) {
+          // handles errors and sends appropriate responses to the client (frontend)
+          if (err.code === "ER_DUP_ENTRY") {
+            // duplicate entry
+            return res.status(400).send("Email already exists.");
           }
-          return res.status(200).send("Registration successful!");
+          return res.status(500).send("Server error, please try again later."); // db error
         }
-      );
-    }
-  );
+
+        // inserts user account (username, password) into the ACCOUNT DB
+        db.query(
+          "INSERT INTO Account (email, password) VALUES (?, ?)",
+          [email, hashedPassword],
+          (err) => {
+            if (err) {
+              return res
+                .status(500)
+                .send("Server error, please try again later.");
+            }
+            return res.status(200).send("Registration successful!");
+          }
+        );
+      }
+    );
+  } catch (err) {
+    console.error("Error during registration:", err);
+    res.status(500).send("Error during registration, please try again later.");
+  }
 });
 
 // Login Endpoint
@@ -87,6 +90,7 @@ app.post("/login", async (req, res) => {
     [email],
     async (err, results) => {
       if (err) {
+        console.error("Error during login:", err);
         return res.status(500).send("Server error, please try again later.");
       }
 
@@ -95,14 +99,21 @@ app.post("/login", async (req, res) => {
       }
 
       const user = results[0];
-      const match = await bcrypt.compare(password, user.password);
 
-      if (!match) {
-        return res.status(400).send("Incorrect password. Please try again.");
+      // Compare the provided password with the hashed password in the database
+      try {
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+          return res.status(400).send("Incorrect password. Please try again.");
+        }
+
+        // Send a success message if credentials are valid
+        return res.status(200).send("Login successful!");
+      } catch (compareErr) {
+        console.error("Error comparing passwords:", compareErr);
+        return res.status(500).send("Error verifying password, please try again.");
       }
-
-      // Send a success message if credentials are valid
-      res.status(200).send("Login successful!");
     }
   );
 });

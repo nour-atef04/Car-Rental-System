@@ -32,7 +32,10 @@ const Login = () => {
 
     try {
       // Make POST request to the server for login
-      const response = await axios.post("http://localhost:5000/login", formData);
+      const response = await axios.post(
+        "http://localhost:5000/login",
+        formData
+      );
 
       setMessage(response.data); // Show success message
 
@@ -42,10 +45,18 @@ const Login = () => {
         password: "",
       });
 
+      // Reset message and error
+      setMessage("");
+      setError("");
+
       navigate("/dashboard");
     } catch (err) {
       // Handle any errors (backend validation or server error)
-      setError(err.response?.data || "Login failed. Please try again.");
+      if (err.response) {
+        setError(err.response.data || "Login failed. Please try again.");
+      } else {
+        setError("Network error, please try again later.");
+      }
     }
   };
 
@@ -77,7 +88,6 @@ const Login = () => {
         <h1 className="text-center">Welcome Back!</h1>
         <h3 className="lead">Please fill in all fields to log-in</h3>
         <form onSubmit={handleSubmit} className="login-form px-5 text-center">
-
           {/* EMAIL */}
           <input
             type="email"
@@ -100,13 +110,16 @@ const Login = () => {
             className="login-input"
           />
           <CustomButton
-            onClick={handleSubmit}
             text="Log-in"
             buttonClass="mt-3 btn fw-bold border-white button-nonsolid"
           />
         </form>
         {message && <p className="success-message">{message}</p>}
-        {error && <p style={{ color: "red" }} className="mt-3 error-message">{error}</p>}
+        {error && (
+          <p style={{ color: "red" }} className="mt-3 error-message">
+            {error}
+          </p>
+        )}
         <p className="register-link">
           Already have an account?{" "}
           <Link to="/register" className="mx-1" style={{ color: "orange" }}>
