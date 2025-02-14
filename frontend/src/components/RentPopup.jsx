@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "./AuthContext";
 
 const RentPopup = (props) => {
   const [fromDate, setFromDate] = useState("");
@@ -7,6 +8,9 @@ const RentPopup = (props) => {
   const [visaNumber, setVisaNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
+  const [store, setStore] = useState(null);
+  const [storeError, setStoreError] = useState(null);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (fromDate && tillDate) {
@@ -24,6 +28,27 @@ const RentPopup = (props) => {
     }
   }, [fromDate, tillDate, props.rentalRate]); //dependecies, we wanan do that every time the from and till date changes
 
+  useEffect(() => {
+    const fetchStoreInfo = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/store-info?store_id=${props.storeID}`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setStore(data.store);
+        } else {
+          setStoreError(data.error);
+        }
+      } catch (err) {
+        setStoreError("Failed to fetch store information.");
+      }
+    };
+    if (props.storeID) {
+      fetchStoreInfo();
+    }
+  }, []);
+
   const handleSubmit = async () => {
     if (!fromDate || !tillDate) {
       setErrorMessage("Please fill in all the fields.");
@@ -36,19 +61,25 @@ const RentPopup = (props) => {
     }
 
     const requestBody = {
-      brand: props.brand,
-      type: props.type,
-      capacity: props.capacity,
-      rentalRate: props.rentalRate,
-      fromDate,
-      tillDate,
-      paymentMethod,
-      visaNumber: paymentMethod === "Visa" ? visaNumber : null,
-      totalAmount,
+      // brand: props.brand,
+      // type: props.type,
+      // capacity: props.capacity,
+      // rentalRate: props.rentalRate,
+      // fromDate,
+      // tillDate,
+      // paymentMethod,
+      // visaNumber: paymentMethod === "Visa" ? visaNumber : null,
+      // totalAmount,
+      vid: props.vid,
+      start_day: fromDate,
+      end_day: tillDate,
+      payment_type: paymentMethod,
+      nationality: user.nationality,
+      ssn: user.ssn,
     };
 
     try {
-      const response = await fetch("http://localhost:5000/rent-car", {
+      const response = await fetch("http://localhost:5000/reserve-car", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +120,7 @@ const RentPopup = (props) => {
           </div>
           <div className="modal-body">
             <p>
-              <strong>Car Details:</strong>
+              <h2>Car Details</h2>
             </p>
             <p>
               <strong>Capacity:</strong> {props.capacity}
@@ -97,9 +128,19 @@ const RentPopup = (props) => {
             <p>
               <strong>Rental Rate:</strong> ${props.rentalRate} per day
             </p>
-            <p>
-              <strong>Pickup Location:</strong> Alex 21
-            </p>
+            {store && (
+              <p>
+                <p>
+                  <strong>Pickup Location:</strong> {store.street}, {store.city}
+                  , {store.country}.
+                </p>
+              </p>
+            )}
+            {store && (
+              <p>
+                <strong>Store Phone Number:</strong> {store.store_phone}
+              </p>
+            )}
             <p>
               <strong>Total Amount:</strong> ${totalAmount || "N/A"}
             </p>
@@ -140,7 +181,7 @@ const RentPopup = (props) => {
             </div>
 
             {paymentMethod === "Visa" && (
-              <div className="form-group">
+              <div className="mt-2 form-group">
                 <label>Visa Card Number</label>
                 <input
                   type="text"

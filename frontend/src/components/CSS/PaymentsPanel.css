@@ -1,0 +1,54 @@
+.payments-panel {
+  margin: 20px auto;
+  max-width: 90%;
+  text-align: center;
+}
+
+.title {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.filter-input {
+  margin: 0 10px;
+  padding: 8px 12px;
+  font-size: 1rem;
+}
+
+.apply-button {
+  padding: 8px 20px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.apply-button:hover {
+  background-color: #0056b3;
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.payments-table th,
+.payments-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.payments-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}

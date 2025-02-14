@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 
 const RentSlider = ({ onRentChange }) => {
-
-  const [maxRent, setMaxRent] = useState(50);
+  const [maxRent, setMaxRent] = useState(500 / 2);
 
   const handleRentChange = (event) => {
     const value = event.target.value;
-    setMaxRent(value); 
+    setMaxRent(value);
     onRentChange(value);
   };
 
@@ -20,7 +19,7 @@ const RentSlider = ({ onRentChange }) => {
         className="form-range"
         id="customRange1"
         min="0"
-        max="100" 
+        max="500"
         step="10"
         onChange={handleRentChange}
       />

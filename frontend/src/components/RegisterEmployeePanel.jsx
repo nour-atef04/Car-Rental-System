@@ -43,6 +43,9 @@ const RegisterEmployeePanel = () => {
     if (!isNumeric(formData.emp_ssn)) {
       validationErrors.emp_ssn = "SSN must be numeric.";
     }
+    if (!isNumeric(formData.store_id)) {
+      validationErrors.emp_ssn = "Store ID must be numeric.";
+    }
     if (!isNumeric(formData.emp_phone)) {
       validationErrors.emp_phone = "Phone number must be numeric.";
     }
@@ -102,6 +105,7 @@ const RegisterEmployeePanel = () => {
         setError({});
       } catch (err) {
         if (err.response) {
+          setError("");
           setServerError(err.response.data || "Server error occurred!");
         } else {
           setServerError("Network error occurred!");
@@ -120,7 +124,6 @@ const RegisterEmployeePanel = () => {
   };
 
   return (
-
     <div>
       <div
         style={formStyle}
@@ -250,11 +253,15 @@ const RegisterEmployeePanel = () => {
             required
             className="register-input"
           />
+
+          <div className="container d-flex flex-column justify-center align-items-center">
+            <button className="mt-2 apply-button">Add Employee</button>
+          </div>
         </form>
 
         {message && <p className="mt-3 success-message">{message}</p>}
         {error && (
-          <p style={{ color: "red" }} className="mt-3 error-message">
+          <p style={{ color: "red" }} className="mt-3 error-message mb-0">
             {Object.values(error).map((err, index) => (
               <p className="m-0" key={index}>
                 {err}

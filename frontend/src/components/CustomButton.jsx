@@ -1,13 +1,16 @@
-import React from "react";
+import React , { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/CSS/CustomButton.css";
+import { AuthContext } from "./AuthContext";
 
 const CustomButton = ({ text, type, buttonClass }) => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
 
   const handleClick = () => {
     switch (type) {
       case "login":
+        logout();
         navigate("/login");
         break;
       case "register":

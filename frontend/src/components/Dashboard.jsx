@@ -7,11 +7,10 @@ import RentSlider from "./RentSlider";
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [maxRent, setMaxRent] = useState(500); // Default max rent value
+  const [maxRent, setMaxRent] = useState(500); // default max rent value
 
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    // console.log(query);
   };
 
   const handleRentChange = (value) => {
@@ -21,13 +20,15 @@ const Dashboard = () => {
   return (
     <>
       <NavBar />
-      <DashboardBackground searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+      <DashboardBackground
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+      />
       <RentSlider onRentChange={handleRentChange} />
-      <CarGrid searchQuery={searchQuery} maxRent={maxRent}/>
+      <CarGrid searchQuery={searchQuery} maxRent={maxRent} />
       <Footer />
     </>
   );
 };
 
 export default Dashboard;
-

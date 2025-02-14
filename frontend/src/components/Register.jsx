@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios"; // to make HTTP requests (send data from form to backend)
 import "../components/CSS/Register.css";
 import CustomButton from "./CustomButton";
 import backgroundImage from "../images/background.png";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +18,10 @@ const Register = () => {
     customer_phone: "",
     nationality: "",
     ssn: "",
+    drivers_license: "",
   });
 
+  const { login } = useContext(AuthContext);
   const [message, setMessage] = useState(""); // store success message
   const [error, setError] = useState(""); // store frontend validation error message
   const [serverError, setServerError] = useState(""); // store server error message
@@ -97,6 +100,10 @@ const Register = () => {
           formData
         );
 
+        // const user = formData;
+        delete formData.password;
+        delete formData.confirmPassword;
+        login(formData);
         setMessage(response.data); // Show success message
 
         // Reset the form
@@ -110,6 +117,7 @@ const Register = () => {
           customer_phone: "",
           nationality: "",
           ssn: "",
+          drivers_license: "",
         });
 
         // Reset message and error
@@ -280,6 +288,19 @@ const Register = () => {
                 name="ssn"
                 placeholder="SSN"
                 value={formData.ssn}
+                onChange={handleChange}
+                required
+                className="register-input"
+              />
+            </div>
+
+            {/* DRIVER'S LICENSE */}
+            <div className="col">
+              <input
+                type="text"
+                name="drivers_license"
+                placeholder="Driver's License"
+                value={formData.drivers_license}
                 onChange={handleChange}
                 required
                 className="register-input"

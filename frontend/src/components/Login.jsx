@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+// To register new employee for the very first time:
+// go to EmployeeProtectedRoute and comment out -> return <Navigate to="/login" />;
+// register new employee
+// comment it back and login
+
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../components/CSS/Login.css";
 import backgroundImage from "../images/background.png";
 import CustomButton from "./CustomButton";
 import { Link } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +19,7 @@ const Login = () => {
     user_type: "", // employee or customer
   });
 
+  const { login } = useContext(AuthContext);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -38,7 +45,10 @@ const Login = () => {
         formData
       );
 
-      setMessage(response.data); // Show success message
+      // setMessage(response.data); // Show success message
+
+      const user = response.data;
+      login(user);
 
       // Reset the form
       setFormData({
@@ -50,7 +60,10 @@ const Login = () => {
       // Reset message and error
       setMessage("");
       setError("");
-
+      if (formData.user_type == "employee") {
+        navigate("/control");
+        return;
+      }
       navigate("/dashboard");
     } catch (err) {
       // Handle any errors (backend validation or server error)
@@ -157,7 +170,7 @@ const Login = () => {
           </p>
         )}
         <p className="register-link">
-          Already have an account?{" "}
+          Register new account?{" "}
           <Link to="/register" className="mx-1" style={{ color: "orange" }}>
             register
           </Link>
